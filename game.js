@@ -21,24 +21,28 @@ for (let i = 0; i < 28; i++) {
 }
 
 // DL part
-const model = tf.loadLayersModel('https://raw.githubusercontent.com/Nursmen/AI_in_work/master/model/model.json');
+async function load_model() {
+    let m = await tf.loadLayersModel('https://raw.githubusercontent.com/Nursmen/AI_in_work/master/model/model.json')
+    return m;
+}
+const model = load_model()
 
 function predictRes(data){
     for (let i = 0; i < data.length; i++) {
         data_predictor[0][i] = parseInt(data[i] / 15 * 255);
     }
 
-    console.log(model);
-
     model.then(function (res) {
         const example = tf.tensor(data_predictor);
+        tf.cast(example, 'float32')
         const prediction = res.predict(example);
-        console.log(prediction);
+        console.log(prediction.arraySync()[0]);
+
+        
+
     }, function (err) {
         console.log(err);
-    });  
-
-    return 1
+    });
 }
 
 function DrawChange(x=-1, y=-1) {
