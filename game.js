@@ -1,3 +1,6 @@
+document.addEventListener('DOMContentLoaded', (event) => {
+    DrawChange()
+})
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -23,36 +26,39 @@ for (let i = 0; i < 28; i++) {
 // DL part
 async function load_model() {
     let m = await tf.loadLayersModel('https://raw.githubusercontent.com/Nursmen/AI_in_work/master/model/model.json')
-    return m;
+    return m; 
 }
 const model = load_model()
 
-function predictRes(data){
+async function predictRes(data){
     for (let i = 0; i < data.length; i++) {
         data_predictor[0][i] = parseInt(data[i] / 15 * 255);
     }
 
-    model.then(function (res) {
+    await model.then(function (res) {
         const example = tf.tensor(data_predictor);
         tf.cast(example, 'float32')
         const prediction = res.predict(example);
         console.log(prediction.arraySync()[0]);
 
-        
+        const max = Math.max(...prediction.arraySync()[0]);
 
+        const index = prediction.arraySync()[0].indexOf(max);
+        document.getElementById('answer').innerHTML = index;
     }, function (err) {
         console.log(err);
     });
 }
 
-function DrawChange(x=-1, y=-1) {
+async function DrawChange(x=-1, y=-1) {
     for (let i = 0; i < 28; i++) {
         for (let j = 0; j < 28; j++) {
             if (i == x-1 || i == x+1 || i == x) {
                 if (j == y-1 || j == y+1 || j == y){
+                    console.log(1);
                     if (data_collector[j * 28 + i] < 15){
                         
-                        data_collector[j * 28 + i] += 3;
+                        data_collector[j * 28 + i] += 2.14285714286;
                     
                     }
                     digit = parseInt(data_collector[j * 28 + i]);
@@ -63,8 +69,7 @@ function DrawChange(x=-1, y=-1) {
             }
         }
     }
-    results = predictRes(data_collector, model);
-    console.log(results);
+    predictRes(data_collector, model);
 }    
 
 function getCursorPosition(canvas, event) {
