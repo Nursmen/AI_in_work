@@ -28,9 +28,10 @@ function predictRes(data){
         data_predictor[0][i] = parseInt(data[i] / 15 * 255);
     }
 
+    console.log(model);
+
     model.then(function (res) {
         const example = tf.tensor(data_predictor);
-        example = tf.cast(example, 'int64')
         const prediction = res.predict(example);
         console.log(prediction);
     }, function (err) {
