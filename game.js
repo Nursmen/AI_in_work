@@ -6,6 +6,7 @@ var height = canvas.height;
 var draw = false
 let devided = width / 28
 var data_collector = []
+var data_predictor = [[]]
 var digit16 = {
     0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:'A', 11:'B', 12:'C', 13:'D', 14:'E', 15:'F'
 }
@@ -20,17 +21,36 @@ for (let i = 0; i < 28; i++) {
 }
 
 // DL part
-const model = tf.loadLayersModel('./model/model.json');
+const model = tf.loadLayersModel('https://raw.githubusercontent.com/Nursmen/AI_in_work/master/model/model.json');
 
-console.log(model);
+function predictRes(data){
+    for (let i = 0; i < data.length; i++) {
+        data_predictor[0][i] = parseInt(data[i] / 15 * 255);
+    }
+
+    model.then(function (res) {
+        const example = tf.tensor(data_predictor);
+        example = tf.cast(example, 'int64')
+        const prediction = res.predict(example);
+        console.log(prediction);
+    }, function (err) {
+        console.log(err);
+    });  
+
+    return 1
+}
 
 function DrawChange(x=-1, y=-1) {
     for (let i = 0; i < 28; i++) {
         for (let j = 0; j < 28; j++) {
             if (i == x-1 || i == x+1 || i == x) {
                 if (j == y-1 || j == y+1 || j == y){
-                    data_collector[j * 28 + i] += 3;
-                    digit = Math.min(15, parseInt(data_collector[j * 28 + i]));
+                    if (data_collector[j * 28 + i] < 15){
+                        
+                        data_collector[j * 28 + i] += 3;
+                    
+                    }
+                    digit = parseInt(data_collector[j * 28 + i]);
                     digit = digit16[digit];
                     ctx.fillStyle = '#'+digit+digit+digit;
                     ctx.fillRect(i*devided, j*devided, devided, devided);
@@ -38,7 +58,10 @@ function DrawChange(x=-1, y=-1) {
             }
         }
     }
+    results = predictRes(data_collector, model);
+    console.log(results);
 }    
+
 function getCursorPosition(canvas, event) {
     if (!draw){
         return
