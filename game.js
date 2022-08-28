@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     DrawChange()
 })
+
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -55,10 +56,9 @@ async function DrawChange(x=-1, y=-1) {
         for (let j = 0; j < 28; j++) {
             if (i == x-1 || i == x+1 || i == x) {
                 if (j == y-1 || j == y+1 || j == y){
-                    console.log(1);
                     if (data_collector[j * 28 + i] < 15){
                         
-                        data_collector[j * 28 + i] += 2.14285714286;
+                        data_collector[j * 28 + i] += 3;
                     
                     }
                     digit = parseInt(data_collector[j * 28 + i]);
